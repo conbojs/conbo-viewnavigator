@@ -48,12 +48,18 @@ var ViewNavigator = /** @class */ (function (_super) {
      */
     ViewNavigator.prototype.__creationCompleteHandler = function (event) {
         if (this.firstView) {
-            var options = this.context.addTo(this.firstViewOptions);
+            var options = this.__assignTo(this.firstViewOptions);
             this.pushView(this.firstView, options);
         }
         else {
             conbo_1.warn('ViewNavigator.firstView not specified');
         }
+    };
+    ViewNavigator.prototype.__assignTo = function (obj) {
+        return conbo_1.setValues(obj || {}, {
+            context: this.context,
+            navigator: this,
+        });
     };
     /**
      * Removes all of the views from the navigator stack
@@ -91,7 +97,7 @@ var ViewNavigator = /** @class */ (function (_super) {
     ViewNavigator.prototype.pushView = function (viewClass, options) {
         if (options === void 0) { options = null; }
         var currentView = conbo_1.last(this.__viewStack, 1).pop();
-        var nextView = new viewClass(options);
+        var nextView = new viewClass(this.__assignTo(options));
         this.__viewStack.push(nextView);
         // TODO Implement CSS transitions
         currentView && currentView.detach();
@@ -103,7 +109,7 @@ var ViewNavigator = /** @class */ (function (_super) {
     ViewNavigator.prototype.replaceView = function (viewClass, options) {
         if (options === void 0) { options = null; }
         var currentView = this.__viewStack.pop();
-        var nextView = new viewClass(options);
+        var nextView = new viewClass(this.__assignTo(options));
         this.__viewStack.pop();
         this.__viewStack.push(nextView);
         // TODO Implement CSS transitions

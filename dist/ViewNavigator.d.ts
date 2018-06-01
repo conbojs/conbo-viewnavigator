@@ -32,6 +32,7 @@ export default class ViewNavigator extends View {
      * @private
      */
     private __creationCompleteHandler;
+    private __assignTo;
     /**
      * Removes all of the views from the navigator stack
      */
