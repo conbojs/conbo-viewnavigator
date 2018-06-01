@@ -1,6 +1,6 @@
 {
 	"name": "conbo-viewnavigator",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "The ConboJS ViewNavigator component is a container that consists of a collection of View objects, where only the top most view is visible and active",
 	"keywords": [
 		"conbo",
@@ -22,7 +22,7 @@
 	},
 	"readme": "./README.md",
 	"types": "./dist/ViewNavigator.d.ts",
-	"devDependencies": {
+	"dependencies": {
 		"conbo": "^4.3.2"
 	}
 }
