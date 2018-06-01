@@ -56,7 +56,7 @@ var ViewNavigator = /** @class */ (function (_super) {
         }
     };
     ViewNavigator.prototype.__assignTo = function (obj) {
-        return conbo_1.setValues(obj || {}, {
+        return conbo_1.setDefaults(obj || {}, {
             context: this.context,
             navigator: this,
         });
@@ -95,7 +95,6 @@ var ViewNavigator = /** @class */ (function (_super) {
      * Pushes a new view onto the top of the navigation stack
      */
     ViewNavigator.prototype.pushView = function (viewClass, options) {
-        if (options === void 0) { options = null; }
         var currentView = conbo_1.last(this.__viewStack, 1).pop();
         var nextView = new viewClass(this.__assignTo(options));
         this.__viewStack.push(nextView);
@@ -107,7 +106,6 @@ var ViewNavigator = /** @class */ (function (_super) {
      * Replaces the top view of the navigation stack with a new view
      */
     ViewNavigator.prototype.replaceView = function (viewClass, options) {
-        if (options === void 0) { options = null; }
         var currentView = this.__viewStack.pop();
         var nextView = new viewClass(this.__assignTo(options));
         this.__viewStack.pop();

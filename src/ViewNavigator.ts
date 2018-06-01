@@ -1,4 +1,4 @@
-import { View, last, ConboEvent, warn, setValues } from 'conbo';
+import { View, last, ConboEvent, warn, setValues, setDefaults } from 'conbo';
 
 document.querySelector('head').innerHTML += '<style type="text/css">.cb-viewnavigator { width:100%; height:100%; }</style>';
 
@@ -69,7 +69,7 @@ export default class ViewNavigator extends View
 
 	private __assignTo(obj:any):any
 	{
-		return setValues(obj || {},
+		return setDefaults(obj || {},
 		{
 			context: this.context,
 			navigator: this,
@@ -122,7 +122,7 @@ export default class ViewNavigator extends View
 	/**
 	 * Pushes a new view onto the top of the navigation stack
 	 */
-	public pushView(viewClass:any, options:any=null):void
+	public pushView(viewClass:any, options?:any):void
 	{
 		let currentView:View = last(this.__viewStack, 1).pop();
 		let nextView:View = new viewClass(this.__assignTo(options));
@@ -138,7 +138,7 @@ export default class ViewNavigator extends View
 	/**
 	 * Replaces the top view of the navigation stack with a new view
 	 */
-	public replaceView(viewClass:any, options:any=null):void
+	public replaceView(viewClass:any, options?:any):void
 	{
 		let currentView:View = this.__viewStack.pop();
 		let nextView:View = new viewClass(this.__assignTo(options));
