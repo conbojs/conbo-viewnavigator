@@ -37,7 +37,20 @@ var ViewNavigator = /** @class */ (function (_super) {
         options.defaultPushTransition && (this.defaultPushTransition = options.defaultPushTransition);
         options.firstView && (this.firstView = options.firstView);
         options.firstViewOptions && (this.firstViewOptions = options.firstViewOptions);
+        this.addEventListener(conbo_1.ConboEvent.CREATION_COMPLETE, this.__creationCompleteHandler, this);
         conbo_1.View.prototype.__construct.apply(this, arguments);
+    };
+    /**
+     * @private
+     */
+    ViewNavigator.prototype.__creationCompleteHandler = function (event) {
+        if (this.firstView) {
+            var options = this.context.addTo(this.firstViewOptions);
+            this.pushView(new this.firstView(options));
+        }
+        else {
+            conbo_1.warn('ViewNavigator.firstView not specified');
+        }
     };
     /**
      * Removes all of the views from the navigator stack

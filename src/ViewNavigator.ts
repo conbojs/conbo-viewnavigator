@@ -1,4 +1,4 @@
-import { View, last } from 'conbo';
+import { View, last, ConboEvent, warn } from 'conbo';
 
 /**
  * ViewNavigator for ConboJS
@@ -41,7 +41,25 @@ export default class ViewNavigator extends View
 		options.firstView && (this.firstView = options.firstView);
 		options.firstViewOptions && (this.firstViewOptions = options.firstViewOptions);
 
+		this.addEventListener(ConboEvent.CREATION_COMPLETE, this.__creationCompleteHandler, this);
+
 		(<any>View.prototype).__construct.apply(this, arguments);
+	}
+
+	/**
+	 * @private
+	 */
+	private __creationCompleteHandler(event:ConboEvent):void
+	{
+		if (this.firstView)
+		{
+			let options = this.context.addTo(this.firstViewOptions);
+			this.pushView(new this.firstView(options));
+		}
+		else
+		{
+			warn('ViewNavigator.firstView not specified');
+		}
 	}
 
 	/**

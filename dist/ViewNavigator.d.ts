@@ -29,6 +29,10 @@ export default class ViewNavigator extends View {
      */
     private __construct;
     /**
+     * @private
+     */
+    private __creationCompleteHandler;
+    /**
      * Removes all of the views from the navigator stack
      */
     popAll(): void;
