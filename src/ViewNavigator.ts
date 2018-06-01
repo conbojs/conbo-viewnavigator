@@ -1,5 +1,7 @@
 import { View, last, ConboEvent, warn } from 'conbo';
 
+document.querySelector('head').innerHTML += '<style type="text/css">cb-viewnavigator { width:100%; height:100%; }</style>';
+
 /**
  * ViewNavigator for ConboJS
  * @author	Mesmotronic Limited <https://www.mesmotronic.com/>
@@ -41,6 +43,7 @@ export default class ViewNavigator extends View
 		options.firstView && (this.firstView = options.firstView);
 		options.firstViewOptions && (this.firstViewOptions = options.firstViewOptions);
 
+		this.className = 'cb-viewnavigator';
 		this.addEventListener(ConboEvent.CREATION_COMPLETE, this.__creationCompleteHandler, this);
 
 		(<any>View.prototype).__construct.apply(this, arguments);

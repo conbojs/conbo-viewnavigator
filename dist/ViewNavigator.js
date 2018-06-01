@@ -11,6 +11,7 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var conbo_1 = require("conbo");
+document.querySelector('head').innerHTML += '<style type="text/css">cb-viewnavigator { width:100%; height:100%; }</style>';
 /**
  * ViewNavigator for ConboJS
  * @author	Mesmotronic Limited <https://www.mesmotronic.com/>
@@ -37,6 +38,7 @@ var ViewNavigator = /** @class */ (function (_super) {
         options.defaultPushTransition && (this.defaultPushTransition = options.defaultPushTransition);
         options.firstView && (this.firstView = options.firstView);
         options.firstViewOptions && (this.firstViewOptions = options.firstViewOptions);
+        this.className = 'cb-viewnavigator';
         this.addEventListener(conbo_1.ConboEvent.CREATION_COMPLETE, this.__creationCompleteHandler, this);
         conbo_1.View.prototype.__construct.apply(this, arguments);
     };
