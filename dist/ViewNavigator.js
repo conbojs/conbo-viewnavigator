@@ -49,7 +49,7 @@ var ViewNavigator = /** @class */ (function (_super) {
     ViewNavigator.prototype.__creationCompleteHandler = function (event) {
         if (this.firstView) {
             var options = this.context.addTo(this.firstViewOptions);
-            this.pushView(new this.firstView(options));
+            this.pushView(this.firstView, options);
         }
         else {
             conbo_1.warn('ViewNavigator.firstView not specified');

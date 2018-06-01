@@ -59,7 +59,7 @@ export default class ViewNavigator extends View
 		if (this.firstView)
 		{
 			let options = this.context.addTo(this.firstViewOptions);
-			this.pushView(new this.firstView(options));
+			this.pushView(this.firstView, options);
 		}
 		else
 		{
