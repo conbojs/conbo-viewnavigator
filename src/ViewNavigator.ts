@@ -1,6 +1,6 @@
 import { View, last, ConboEvent, warn } from 'conbo';
 
-document.querySelector('head').innerHTML += '<style type="text/css">cb-viewnavigator { width:100%; height:100%; }</style>';
+document.querySelector('head').innerHTML += '<style type="text/css">.cb-viewnavigator { width:100%; height:100%; }</style>';
 
 /**
  * ViewNavigator for ConboJS
