@@ -39,7 +39,7 @@ var ViewNavigator = /** @class */ (function (_super) {
         options.firstView && (this.firstView = options.firstView);
         options.firstViewOptions && (this.firstViewOptions = options.firstViewOptions);
         this.__viewStack = [];
-        this.className = 'cb-viewnavigator';
+        this.className += ' cb-viewnavigator';
         this.addEventListener(conbo_1.ConboEvent.CREATION_COMPLETE, this.__creationCompleteHandler, this);
         conbo_1.View.prototype.__construct.apply(this, arguments);
     };

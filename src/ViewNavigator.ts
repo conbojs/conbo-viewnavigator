@@ -44,7 +44,7 @@ export default class ViewNavigator extends View
 		options.firstViewOptions && (this.firstViewOptions = options.firstViewOptions);
 
 		this.__viewStack = [];
-		this.className = 'cb-viewnavigator';
+		this.className += ' cb-viewnavigator';
 
 		this.addEventListener(ConboEvent.CREATION_COMPLETE, this.__creationCompleteHandler, this);
 
