@@ -67,11 +67,13 @@ var ViewNavigator = /** @class */ (function (_super) {
      * Removes all views except the bottom view from the navigation stack
      */
     ViewNavigator.prototype.popToFirstView = function () {
-        var currentView = this.__viewStack.splice(1).pop();
-        var nextView = conbo_1.last(this.__viewStack, 1).pop();
-        // TODO Implement CSS transitions
-        currentView.remove();
-        this.appendView(nextView);
+        if (this.__viewStack.length > 1) {
+            var currentView = this.__viewStack.splice(1).pop();
+            var nextView = conbo_1.last(this.__viewStack, 1).pop();
+            // TODO Implement CSS transitions
+            currentView && currentView.remove();
+            this.appendView(nextView);
+        }
     };
     /**
      * Pops the current view off the navigation stack
@@ -80,8 +82,8 @@ var ViewNavigator = /** @class */ (function (_super) {
         var currentView = this.__viewStack.pop();
         var nextView = conbo_1.last(this.__viewStack, 1).pop();
         // TODO Implement CSS transitions
-        currentView.remove();
-        this.appendView(nextView);
+        currentView && currentView.remove();
+        nextView && this.appendView(nextView);
     };
     /**
      * Pushes a new view onto the top of the navigation stack
@@ -92,7 +94,7 @@ var ViewNavigator = /** @class */ (function (_super) {
         var nextView = new viewClass(options);
         this.__viewStack.push(nextView);
         // TODO Implement CSS transitions
-        currentView.detach();
+        currentView && currentView.detach();
         this.appendView(nextView);
     };
     /**
@@ -105,7 +107,7 @@ var ViewNavigator = /** @class */ (function (_super) {
         this.__viewStack.pop();
         this.__viewStack.push(nextView);
         // TODO Implement CSS transitions
-        currentView.remove();
+        currentView && currentView.remove();
         this.appendView(nextView);
     };
     return ViewNavigator;

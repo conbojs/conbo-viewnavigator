@@ -84,13 +84,16 @@ export default class ViewNavigator extends View
 	 */
 	popToFirstView():void
 	{
-		let currentView:View = this.__viewStack.splice(1).pop();
-		let nextView:View = last(this.__viewStack, 1).pop();
+		if (this.__viewStack.length > 1)
+		{
+			let currentView:View = this.__viewStack.splice(1).pop();
+			let nextView:View = last(this.__viewStack, 1).pop();
 
-		// TODO Implement CSS transitions
+			// TODO Implement CSS transitions
 
-		currentView.remove();
-		this.appendView(nextView);
+			currentView && currentView.remove();
+			this.appendView(nextView);
+		}
 	}
 
 	/**
@@ -103,8 +106,8 @@ export default class ViewNavigator extends View
 
 		// TODO Implement CSS transitions
 
-		currentView.remove();
-		this.appendView(nextView);
+		currentView && currentView.remove();
+		nextView && this.appendView(nextView);
 	}
 
 	/**
@@ -119,7 +122,7 @@ export default class ViewNavigator extends View
 
 		// TODO Implement CSS transitions
 
-		currentView.detach();
+		currentView && currentView.detach();
 		this.appendView(nextView);
 	}
 
@@ -136,7 +139,7 @@ export default class ViewNavigator extends View
 
 		// TODO Implement CSS transitions
 
-		currentView.remove();
+		currentView && currentView.remove();
 		this.appendView(nextView);
 	}
 }
