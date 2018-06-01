@@ -1,0 +1,26 @@
+{
+	"name": "conbo-viewnavigator",
+	"version": "0.0.1",
+	"description": "The ConboJS ViewNavigator component is a container that consists of a collection of View objects, where only the top most view is visible and active",
+	"keywords": [
+		"conbo",
+		"view",
+		"viewstack",
+		"manager"
+	],
+	"homepage": "https://conbo.mesmotronic.com",
+	"license": "BSD-3-Clause",
+	"author": "Mesmotronic",
+	"files": [
+		"dist"
+	],
+	"main": "./dist/ViewNavigator.js",
+	"repository": {
+		"type": "git",
+		"url": "git@github.com:mesmotronic/conbo-viewstack.git"
+	},
+	"readme": "./README.md",
+	"devDependencies": {
+		"conbo": "^4.3.2"
+	}
+}

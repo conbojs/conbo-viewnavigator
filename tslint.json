@@ -1,0 +1,12 @@
+{
+	"rules":
+	{
+		"class-name": true,		
+		"indent": [true, "tabs"],
+		"no-duplicate-variable": true,
+		"no-trailing-whitespace": true,
+		"no-var-keyword": true,
+		"quotemark": [true, "single"],
+		"semicolon": [true, "always"]
+	}
+}
