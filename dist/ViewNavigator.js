@@ -11,7 +11,42 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var conbo_1 = require("conbo");
-document.querySelector('head').innerHTML += '<style type="text/css">.cb-viewnavigator { width:100%; height:100%; }</style>';
+document.querySelector('head').innerHTML +=
+    '<style type="text/css">' +
+        '.cb-viewnavigator { position:relative; }' +
+        '.cb-viewnavigator, .cb-viewnavigator > .cb-view { width:100%; height:100%; }' +
+        '.cb-viewnavigator > .cb-view { position:absolute; transition:all 0.4s; left:-100%; }' +
+        '.cb-pop-transition { left:-100%; }' +
+        '.cb-push-transition { left:0; }' +
+        '</style>';
+function defaultPopTransition(el) {
+    // From 0 to 100%
+    var left = 0;
+    var end = 100;
+    var animate = function () {
+        left += (end - left) / 10;
+        if (~~left == end)
+            left = end;
+        el.style.left = left + "vw";
+        if (left != end)
+            requestAnimationFrame(animate);
+    };
+    animate();
+}
+function defaultPushTransition(el) {
+    // From 100% to 0
+    var left = 100;
+    var end = 0;
+    var animate = function () {
+        left += (end - left) / 10;
+        if (~~left == end)
+            left = end;
+        el.style.left = left + "vw";
+        if (left != end)
+            requestAnimationFrame(animate);
+    };
+    animate();
+}
 /**
  * ViewNavigator for ConboJS
  * @author	Mesmotronic Limited <https://www.mesmotronic.com/>
@@ -19,25 +54,13 @@ document.querySelector('head').innerHTML += '<style type="text/css">.cb-viewnavi
 var ViewNavigator = /** @class */ (function (_super) {
     __extends(ViewNavigator, _super);
     function ViewNavigator() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        /**
-         * CSS class name of the pop transition (not currently implemented)
-         */
-        _this.defaultPopTransition = 'cb-pop-transition';
-        /**
-         * CSS class name of the push transition (not currently implemented)
-         */
-        _this.defaultPushTransition = 'cb-push-transition';
-        return _this;
+        return _super !== null && _super.apply(this, arguments) || this;
     }
     /**
      * @private
      */
     ViewNavigator.prototype.__construct = function (options) {
-        options.defaultPopTransition && (this.defaultPopTransition = options.defaultPopTransition);
-        options.defaultPushTransition && (this.defaultPushTransition = options.defaultPushTransition);
-        options.firstView && (this.firstView = options.firstView);
-        options.firstViewOptions && (this.firstViewOptions = options.firstViewOptions);
+        conbo_1.setValues(this, conbo_1.setDefaults({}, conbo_1.pick(options, 'defaultPopTransition', 'defaultPushTransition', 'firstView', 'firstViewOptions'), conbo_1.pick(this, 'defaultPopTransition', 'defaultPushTransition', 'firstView', 'firstViewOptions'), { defaultPopTransition: defaultPopTransition, defaultPushTransition: defaultPushTransition }));
         this.__viewStack = [];
         this.className += ' cb-viewnavigator';
         this.addEventListener(conbo_1.ConboEvent.CREATION_COMPLETE, this.__creationCompleteHandler, this);
@@ -66,8 +89,11 @@ var ViewNavigator = /** @class */ (function (_super) {
      */
     ViewNavigator.prototype.popAll = function () {
         var currentView = this.__viewStack.splice(0).pop();
-        // TODO Implement CSS transitions
-        currentView.remove();
+        // TODO Implement transitions
+        if (currentView) {
+            currentView.remove();
+            this.defaultPopTransition(currentView.el);
+        }
     };
     /**
      * Removes all views except the bottom view from the navigation stack
@@ -76,9 +102,12 @@ var ViewNavigator = /** @class */ (function (_super) {
         if (this.__viewStack.length > 1) {
             var currentView = this.__viewStack.splice(1).pop();
             var nextView = conbo_1.last(this.__viewStack, 1).pop();
-            // TODO Implement CSS transitions
-            currentView && currentView.remove();
+            // TODO Implement transitions
+            if (currentView) {
+                currentView.remove();
+            }
             this.appendView(nextView);
+            this.defaultPopTransition(nextView.el);
         }
     };
     /**
@@ -87,9 +116,14 @@ var ViewNavigator = /** @class */ (function (_super) {
     ViewNavigator.prototype.popView = function () {
         var currentView = this.__viewStack.pop();
         var nextView = conbo_1.last(this.__viewStack, 1).pop();
-        // TODO Implement CSS transitions
-        currentView && currentView.remove();
-        nextView && this.appendView(nextView);
+        // TODO Implement transitions
+        if (currentView) {
+            currentView.remove();
+            this.defaultPopTransition(currentView.el);
+        }
+        if (nextView) {
+            this.appendView(nextView);
+        }
     };
     /**
      * Pushes a new view onto the top of the navigation stack
@@ -98,9 +132,10 @@ var ViewNavigator = /** @class */ (function (_super) {
         var currentView = conbo_1.last(this.__viewStack, 1).pop();
         var nextView = new viewClass(this.__assignTo(options));
         this.__viewStack.push(nextView);
-        // TODO Implement CSS transitions
+        // TODO Implement transitions
         currentView && currentView.detach();
         this.appendView(nextView);
+        this.defaultPushTransition(nextView.el);
     };
     /**
      * Replaces the top view of the navigation stack with a new view
@@ -110,9 +145,10 @@ var ViewNavigator = /** @class */ (function (_super) {
         var nextView = new viewClass(this.__assignTo(options));
         this.__viewStack.pop();
         this.__viewStack.push(nextView);
-        // TODO Implement CSS transitions
+        // TODO Implement transitions
         currentView && currentView.remove();
         this.appendView(nextView);
+        this.defaultPushTransition(nextView.el);
     };
     return ViewNavigator;
 }(conbo_1.View));

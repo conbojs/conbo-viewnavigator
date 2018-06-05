@@ -1,6 +1,49 @@
-import { View, last, ConboEvent, warn, setValues, setDefaults } from 'conbo';
+import { ConboEvent, last, setDefaults, View, warn, pick, setValues } from 'conbo';
 
-document.querySelector('head').innerHTML += '<style type="text/css">.cb-viewnavigator { width:100%; height:100%; }</style>';
+document.querySelector('head').innerHTML +=
+	'<style type="text/css">'+
+		'.cb-viewnavigator { position:relative; }'+
+		'.cb-viewnavigator, .cb-viewnavigator > .cb-view { width:100%; height:100%; }'+
+		'.cb-viewnavigator > .cb-view { position:absolute; transition:all 0.4s; left:-100%; }'+
+		'.cb-pop-transition { left:-100%; }'+
+		'.cb-push-transition { left:0; }'+
+	'</style>';
+
+function defaultPopTransition(el:HTMLElement):void
+{
+	// From 0 to 100%
+
+	let left = 0;
+	let end = 100;
+
+	let animate = () =>
+	{
+		left += (end - left) / 10;
+		if (~~left == end) left = end;
+		el.style.left = `${left}vw`;
+		if (left != end) requestAnimationFrame(animate);
+	};
+
+	animate();
+}
+
+function defaultPushTransition(el:HTMLElement):void
+{
+	// From 100% to 0
+
+	let left = 100;
+	let end = 0;
+
+	let animate = () =>
+	{
+		left += (end - left) / 10;
+		if (~~left == end) left = end;
+		el.style.left = `${left}vw`;
+		if (left != end) requestAnimationFrame(animate);
+	};
+
+	animate();
+}
 
 /**
  * ViewNavigator for ConboJS
@@ -9,14 +52,14 @@ document.querySelector('head').innerHTML += '<style type="text/css">.cb-viewnavi
 export default class ViewNavigator extends View
 {
 	/**
-	 * CSS class name of the pop transition (not currently implemented)
+	 * Function that controls the pop transition (not currently implemented)
 	 */
-	public defaultPopTransition:string = 'cb-pop-transition';
+	public defaultPopTransition:Function;
 
 	/**
-	 * CSS class name of the push transition (not currently implemented)
+	 * Function that controls the push transition (not currently implemented)
 	 */
-	public defaultPushTransition:string = 'cb-push-transition';
+	public defaultPushTransition:Function;
 
 	/**
 	 * Class of first view to display
@@ -38,10 +81,13 @@ export default class ViewNavigator extends View
 	 */
 	private __construct(options:any):void
 	{
-		options.defaultPopTransition && (this.defaultPopTransition = options.defaultPopTransition);
-		options.defaultPushTransition && (this.defaultPushTransition = options.defaultPushTransition);
-		options.firstView && (this.firstView = options.firstView);
-		options.firstViewOptions && (this.firstViewOptions = options.firstViewOptions);
+		setValues(this, setDefaults
+		(
+			{},
+			pick(options, 'defaultPopTransition', 'defaultPushTransition', 'firstView', 'firstViewOptions'),
+			pick(this, 'defaultPopTransition', 'defaultPushTransition', 'firstView', 'firstViewOptions'),
+			{defaultPopTransition, defaultPushTransition}
+		));
 
 		this.__viewStack = [];
 		this.className += ' cb-viewnavigator';
@@ -83,9 +129,13 @@ export default class ViewNavigator extends View
 	{
 		let currentView:View = this.__viewStack.splice(0).pop();
 
-		// TODO Implement CSS transitions
+		// TODO Implement transitions
 
-		currentView.remove();
+		if (currentView)
+		{
+			currentView.remove();
+			this.defaultPopTransition(currentView.el);
+		}
 	}
 
 	/**
@@ -98,10 +148,15 @@ export default class ViewNavigator extends View
 			let currentView:View = this.__viewStack.splice(1).pop();
 			let nextView:View = last(this.__viewStack, 1).pop();
 
-			// TODO Implement CSS transitions
+			// TODO Implement transitions
 
-			currentView && currentView.remove();
+			if (currentView)
+			{
+				currentView.remove();
+			}
+
 			this.appendView(nextView);
+			this.defaultPopTransition(nextView.el);
 		}
 	}
 
@@ -113,10 +168,18 @@ export default class ViewNavigator extends View
 		let currentView:View = this.__viewStack.pop();
 		let nextView:View = last(this.__viewStack, 1).pop();
 
-		// TODO Implement CSS transitions
+		// TODO Implement transitions
 
-		currentView && currentView.remove();
-		nextView && this.appendView(nextView);
+		if (currentView)
+		{
+			currentView.remove();
+			this.defaultPopTransition(currentView.el);
+		}
+
+		if (nextView)
+		{
+			this.appendView(nextView);
+		}
 	}
 
 	/**
@@ -129,10 +192,12 @@ export default class ViewNavigator extends View
 
 		this.__viewStack.push(nextView);
 
-		// TODO Implement CSS transitions
+		// TODO Implement transitions
 
 		currentView && currentView.detach();
+
 		this.appendView(nextView);
+		this.defaultPushTransition(nextView.el);
 	}
 
 	/**
@@ -146,9 +211,11 @@ export default class ViewNavigator extends View
 		this.__viewStack.pop();
 		this.__viewStack.push(nextView);
 
-		// TODO Implement CSS transitions
+		// TODO Implement transitions
 
 		currentView && currentView.remove();
+
 		this.appendView(nextView);
+		this.defaultPushTransition(nextView.el);
 	}
 }

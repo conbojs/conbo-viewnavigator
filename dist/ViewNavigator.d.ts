@@ -5,13 +5,13 @@ import { View } from 'conbo';
  */
 export default class ViewNavigator extends View {
     /**
-     * CSS class name of the pop transition (not currently implemented)
+     * Function that controls the pop transition (not currently implemented)
      */
-    defaultPopTransition: string;
+    defaultPopTransition: Function;
     /**
-     * CSS class name of the push transition (not currently implemented)
+     * Function that controls the push transition (not currently implemented)
      */
-    defaultPushTransition: string;
+    defaultPushTransition: Function;
     /**
      * Class of first view to display
      */
