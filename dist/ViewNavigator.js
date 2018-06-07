@@ -17,20 +17,23 @@ document.querySelector('head').innerHTML +=
         '.cb-viewnavigator, .cb-viewnavigator > .cb-view { width:100%; height:100%; }' +
         '.cb-viewnavigator > .cb-view { position:absolute; }' +
         '</style>';
+function easeOutCubic(currentIteration, startValue, changeInValue, totalIterations) {
+    return changeInValue * (Math.pow(currentIteration / totalIterations - 1, 3) + 1) + startValue;
+}
 function slide(view, fromPercent, toPercent) {
     return new conbo_1.Promise(function (resolve, reject) {
         var el = view.el;
-        var left = fromPercent;
-        var end = toPercent;
+        var totalIterations = 12;
+        var currentIteration = 0;
+        var currentPercent = fromPercent;
+        var changeInValue = toPercent - fromPercent;
         var animate = function () {
-            el.style.left = left + "%";
-            if (left == end) {
+            el.style.left = currentPercent + "%";
+            if (currentIteration == totalIterations) {
                 resolve();
             }
             else {
-                left += (end - left) / 4;
-                if (Math.round(left) == Math.round(end))
-                    left = end;
+                currentPercent = easeOutCubic(currentIteration++, fromPercent, changeInValue, totalIterations);
                 requestAnimationFrame(animate);
             }
         };

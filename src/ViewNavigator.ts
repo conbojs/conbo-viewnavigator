@@ -7,26 +7,32 @@ document.querySelector('head').innerHTML +=
 		'.cb-viewnavigator > .cb-view { position:absolute; }'+
 	'</style>';
 
+function easeOutCubic(currentIteration:number, startValue:number, changeInValue:number, totalIterations:number):number
+{
+	return changeInValue * (Math.pow(currentIteration / totalIterations - 1, 3) + 1) + startValue;
+}
+
 function slide(view:View, fromPercent:number, toPercent:number):Promise<void>
 {
 	return new Promise((resolve, reject) =>
 	{
 		let el = view.el;
-		let left = fromPercent;
-		let end = toPercent;
+		let totalIterations = 12;
+		let currentIteration = 0;
+		let currentPercent = fromPercent;
+		let changeInValue = toPercent-fromPercent;
 
 		let animate = () =>
 		{
-			el.style.left = `${left}%`;
+			el.style.left = `${currentPercent}%`;
 
-			if (left == end)
+			if (currentIteration == totalIterations)
 			{
 				resolve();
 			}
 			else
 			{
-				left += (end - left) / 4;
-				if (Math.round(left) == Math.round(end)) left = end;
+				currentPercent = easeOutCubic(currentIteration++, fromPercent, changeInValue, totalIterations);
 				requestAnimationFrame(animate);
 			}
 		};
