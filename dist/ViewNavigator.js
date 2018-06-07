@@ -137,6 +137,7 @@ function slide(view, fromPercent, toPercent) {
         var animate = function () {
             el.style.left = currentPercent + "%";
             if (currentIteration == totalIterations) {
+                el.style.left = toPercent + "%";
                 el.style.pointerEvents = null;
                 resolve();
             }

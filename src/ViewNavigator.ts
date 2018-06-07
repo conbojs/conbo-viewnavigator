@@ -214,7 +214,9 @@ function slide(view:View, fromPercent:number, toPercent:number):Promise<any>
 
 			if (currentIteration == totalIterations)
 			{
+				el.style.left = `${toPercent}%`;
 				el.style.pointerEvents = null;
+
 				resolve();
 			}
 			else
