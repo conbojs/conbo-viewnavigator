@@ -1,48 +1,54 @@
-import { ConboEvent, last, setDefaults, View, warn, pick, setValues } from 'conbo';
+import { ConboEvent, last, setDefaults, View, warn, pick, assign, Promise } from 'conbo';
 
 document.querySelector('head').innerHTML +=
 	'<style type="text/css">'+
 		'.cb-viewnavigator { position:relative; }'+
 		'.cb-viewnavigator, .cb-viewnavigator > .cb-view { width:100%; height:100%; }'+
-		'.cb-viewnavigator > .cb-view { position:absolute; transition:all 0.4s; left:-100%; }'+
-		'.cb-pop-transition { left:-100%; }'+
-		'.cb-push-transition { left:0; }'+
+		'.cb-viewnavigator > .cb-view { position:absolute; }'+
 	'</style>';
 
-function defaultPopTransition(el:HTMLElement):void
+function slide(view:View, fromPercent:number, toPercent:number):Promise<void>
 {
-	// From 0 to 100%
-
-	let left = 0;
-	let end = 100;
-
-	let animate = () =>
+	return new Promise((resolve, reject) =>
 	{
-		left += (end - left) / 10;
-		if (~~left == end) left = end;
-		el.style.left = `${left}vw`;
-		if (left != end) requestAnimationFrame(animate);
-	};
+		let el = view.el;
+		let left = fromPercent;
+		let end = toPercent;
 
-	animate();
+		let animate = () =>
+		{
+			el.style.left = `${left}%`;
+
+			if (left == end)
+			{
+				resolve();
+			}
+			else
+			{
+				left += (end - left) / 4;
+				if (Math.round(left) == Math.round(end)) left = end;
+				requestAnimationFrame(animate);
+			}
+		};
+
+		requestAnimationFrame(animate);
+	});
 }
 
-function defaultPushTransition(el:HTMLElement):void
+function defaultPopTransition(outgoingView:View, incomingView?:View):Promise<void>
 {
-	// From 100% to 0
+	// Slide from 0 to 100%
 
-	let left = 100;
-	let end = 0;
+	if (incomingView) slide(incomingView, -100, 0);
+	return slide(outgoingView, 0, 100);
+}
 
-	let animate = () =>
-	{
-		left += (end - left) / 10;
-		if (~~left == end) left = end;
-		el.style.left = `${left}vw`;
-		if (left != end) requestAnimationFrame(animate);
-	};
+function defaultPushTransition(incomingView:View, outgoingView?:View):Promise<void>
+{
+	// Slide from 100% to 0
 
-	animate();
+	if (outgoingView) slide(outgoingView, 0, -100);
+	return slide(incomingView, 100, 0);
 }
 
 /**
@@ -81,7 +87,7 @@ export default class ViewNavigator extends View
 	 */
 	private __construct(options:any):void
 	{
-		setValues(this, setDefaults
+		assign(this, setDefaults
 		(
 			{},
 			pick(options, 'defaultPopTransition', 'defaultPushTransition', 'firstView', 'firstViewOptions'),
@@ -105,7 +111,10 @@ export default class ViewNavigator extends View
 		if (this.firstView)
 		{
 			let options = this.__assignTo(this.firstViewOptions);
-			this.pushView(this.firstView, options);
+			let firstView = new this.firstView(options);
+
+			this.__viewStack.push(firstView);
+			this.appendView(firstView);
 		}
 		else
 		{
@@ -123,9 +132,45 @@ export default class ViewNavigator extends View
 	}
 
 	/**
+	 * Pops the current view off the navigation stack
+	 */
+	public popView():void
+	{
+		if (this.__viewStack.length > 0)
+		{
+			let currentView:View = this.__viewStack.pop();
+			let nextView:View = last(this.__viewStack);
+
+			this.appendView(nextView);
+
+			this.defaultPopTransition(currentView, nextView)
+				.then(() => currentView && currentView.remove())
+				;
+		}
+	}
+
+	/**
+	 * Removes all views except the bottom view from the navigation stack
+	 */
+	public popToFirstView():void
+	{
+		if (this.__viewStack.length > 1)
+		{
+			let currentView:View = this.__viewStack.splice(1).pop();
+			let nextView:View = last(this.__viewStack);
+
+			this.appendView(nextView);
+
+			this.defaultPopTransition(currentView, nextView)
+				.then(() => currentView && currentView.remove())
+				;
+		}
+	}
+
+	/**
 	 * Removes all of the views from the navigator stack
 	 */
-	popAll():void
+	public popAll():void
 	{
 		let currentView:View = this.__viewStack.splice(0).pop();
 
@@ -133,52 +178,9 @@ export default class ViewNavigator extends View
 
 		if (currentView)
 		{
-			currentView.remove();
-			this.defaultPopTransition(currentView.el);
-		}
-	}
-
-	/**
-	 * Removes all views except the bottom view from the navigation stack
-	 */
-	popToFirstView():void
-	{
-		if (this.__viewStack.length > 1)
-		{
-			let currentView:View = this.__viewStack.splice(1).pop();
-			let nextView:View = last(this.__viewStack, 1).pop();
-
-			// TODO Implement transitions
-
-			if (currentView)
-			{
-				currentView.remove();
-			}
-
-			this.appendView(nextView);
-			this.defaultPopTransition(nextView.el);
-		}
-	}
-
-	/**
-	 * Pops the current view off the navigation stack
-	 */
-	public popView():void
-	{
-		let currentView:View = this.__viewStack.pop();
-		let nextView:View = last(this.__viewStack, 1).pop();
-
-		// TODO Implement transitions
-
-		if (currentView)
-		{
-			currentView.remove();
-			this.defaultPopTransition(currentView.el);
-		}
-
-		if (nextView)
-		{
-			this.appendView(nextView);
+			this.defaultPopTransition(currentView)
+				.then(() => currentView.remove())
+				;
 		}
 	}
 
@@ -187,17 +189,16 @@ export default class ViewNavigator extends View
 	 */
 	public pushView(viewClass:any, options?:any):void
 	{
-		let currentView:View = last(this.__viewStack, 1).pop();
+		let currentView:View = last(this.__viewStack);
 		let nextView:View = new viewClass(this.__assignTo(options));
 
 		this.__viewStack.push(nextView);
 
-		// TODO Implement transitions
-
-		currentView && currentView.detach();
-
 		this.appendView(nextView);
-		this.defaultPushTransition(nextView.el);
+
+		this.defaultPushTransition(nextView, currentView)
+			.then(() => currentView && currentView.detach())
+			;
 	}
 
 	/**
@@ -208,14 +209,12 @@ export default class ViewNavigator extends View
 		let currentView:View = this.__viewStack.pop();
 		let nextView:View = new viewClass(this.__assignTo(options));
 
-		this.__viewStack.pop();
 		this.__viewStack.push(nextView);
 
-		// TODO Implement transitions
-
-		currentView && currentView.remove();
-
 		this.appendView(nextView);
-		this.defaultPushTransition(nextView.el);
+
+		this.defaultPushTransition(nextView, currentView)
+			.then(() => currentView && currentView.remove())
+			;
 	}
 }

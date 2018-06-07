@@ -23,6 +23,6 @@
 	"readme": "./README.md",
 	"types": "./dist/ViewNavigator.d.ts",
 	"dependencies": {
-		"conbo": "^4.3.2"
+		"conbo": "^4.3.3"
 	}
 }

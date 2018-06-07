@@ -34,17 +34,17 @@ export default class ViewNavigator extends View {
     private __creationCompleteHandler;
     private __assignTo;
     /**
-     * Removes all of the views from the navigator stack
+     * Pops the current view off the navigation stack
      */
-    popAll(): void;
+    popView(): void;
     /**
      * Removes all views except the bottom view from the navigation stack
      */
     popToFirstView(): void;
     /**
-     * Pops the current view off the navigation stack
+     * Removes all of the views from the navigator stack
      */
-    popView(): void;
+    popAll(): void;
     /**
      * Pushes a new view onto the top of the navigation stack
      */
