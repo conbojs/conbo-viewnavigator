@@ -1,17 +1,19 @@
-import { View } from 'conbo';
+import { View, Promise } from 'conbo';
 /**
  * ViewNavigator for ConboJS
  * @author	Mesmotronic Limited <https://www.mesmotronic.com/>
  */
 export default class ViewNavigator extends View {
     /**
-     * Function that controls the pop transition (not currently implemented)
+     * Function that controls the pop transition
+     * @example		function(startView:View, endView:View):Promise<any> { ... }
      */
-    defaultPopTransition: Function;
+    defaultPopTransition: (startView: View, endView: View) => Promise<any>;
     /**
-     * Function that controls the push transition (not currently implemented)
+     * Function that controls the push transition
+     * @example		function(startView:View, endView:View):Promise<any> { ... }
      */
-    defaultPushTransition: Function;
+    defaultPushTransition: (startView: View, endView: View) => Promise<any>;
     /**
      * Class of first view to display
      */
@@ -36,21 +38,21 @@ export default class ViewNavigator extends View {
     /**
      * Pops the current view off the navigation stack
      */
-    popView(): void;
+    popView(transition?: (startView: View, endView: View) => Promise<any>): void;
     /**
      * Removes all views except the bottom view from the navigation stack
      */
-    popToFirstView(): void;
+    popToFirstView(transition?: (startView: View, endView: View, transition?: (startView: View, endView: View) => Promise<any>) => Promise<any>): void;
     /**
      * Removes all of the views from the navigator stack
      */
-    popAll(): void;
+    popAll(transition?: (startView: View, endView: View) => Promise<any>): void;
     /**
      * Pushes a new view onto the top of the navigation stack
      */
-    pushView(viewClass: any, options?: any): void;
+    pushView(viewClass: any, options?: any, transition?: (startView: View, endView: View) => Promise<any>): void;
     /**
      * Replaces the top view of the navigation stack with a new view
      */
-    replaceView(viewClass: any, options?: any): void;
+    replaceView(viewClass: any, options?: any, transition?: (startView: View, endView: View) => Promise<any>): void;
 }

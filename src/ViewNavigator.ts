@@ -1,62 +1,5 @@
 import { ConboEvent, last, setDefaults, View, warn, pick, assign, Promise } from 'conbo';
 
-document.querySelector('head').innerHTML +=
-	'<style type="text/css">'+
-		'.cb-viewnavigator { position:relative; }'+
-		'.cb-viewnavigator, .cb-viewnavigator > .cb-view { width:100%; height:100%; }'+
-		'.cb-viewnavigator > .cb-view { position:absolute; }'+
-	'</style>';
-
-function easeOutCubic(currentIteration:number, startValue:number, changeInValue:number, totalIterations:number):number
-{
-	return changeInValue * (Math.pow(currentIteration / totalIterations - 1, 3) + 1) + startValue;
-}
-
-function slide(view:View, fromPercent:number, toPercent:number):Promise<void>
-{
-	return new Promise((resolve, reject) =>
-	{
-		let el = view.el;
-		let totalIterations = 12;
-		let currentIteration = 0;
-		let currentPercent = fromPercent;
-		let changeInValue = toPercent-fromPercent;
-
-		let animate = () =>
-		{
-			el.style.left = `${currentPercent}%`;
-
-			if (currentIteration == totalIterations)
-			{
-				resolve();
-			}
-			else
-			{
-				currentPercent = easeOutCubic(currentIteration++, fromPercent, changeInValue, totalIterations);
-				requestAnimationFrame(animate);
-			}
-		};
-
-		requestAnimationFrame(animate);
-	});
-}
-
-function defaultPopTransition(outgoingView:View, incomingView?:View):Promise<void>
-{
-	// Slide from 0 to 100%
-
-	if (incomingView) slide(incomingView, -100, 0);
-	return slide(outgoingView, 0, 100);
-}
-
-function defaultPushTransition(incomingView:View, outgoingView?:View):Promise<void>
-{
-	// Slide from 100% to 0
-
-	if (outgoingView) slide(outgoingView, 0, -100);
-	return slide(incomingView, 100, 0);
-}
-
 /**
  * ViewNavigator for ConboJS
  * @author	Mesmotronic Limited <https://www.mesmotronic.com/>
@@ -64,14 +7,16 @@ function defaultPushTransition(incomingView:View, outgoingView?:View):Promise<vo
 export default class ViewNavigator extends View
 {
 	/**
-	 * Function that controls the pop transition (not currently implemented)
+	 * Function that controls the pop transition
+	 * @example		function(startView:View, endView:View):Promise<any> { ... }
 	 */
-	public defaultPopTransition:Function;
+	public defaultPopTransition:(startView:View, endView:View)=>Promise<any>;
 
 	/**
-	 * Function that controls the push transition (not currently implemented)
+	 * Function that controls the push transition
+	 * @example		function(startView:View, endView:View):Promise<any> { ... }
 	 */
-	public defaultPushTransition:Function;
+	public defaultPushTransition:(startView:View, endView:View)=>Promise<any>;
 
 	/**
 	 * Class of first view to display
@@ -140,16 +85,18 @@ export default class ViewNavigator extends View
 	/**
 	 * Pops the current view off the navigation stack
 	 */
-	public popView():void
+	public popView(transition?:(startView:View, endView:View)=>Promise<any>):void
 	{
 		if (this.__viewStack.length > 0)
 		{
+			transition || (transition = this.defaultPopTransition);
+
 			let currentView:View = this.__viewStack.pop();
 			let nextView:View = last(this.__viewStack);
 
 			this.appendView(nextView);
 
-			this.defaultPopTransition(currentView, nextView)
+			transition(currentView, nextView)
 				.then(() => currentView && currentView.remove())
 				;
 		}
@@ -158,16 +105,18 @@ export default class ViewNavigator extends View
 	/**
 	 * Removes all views except the bottom view from the navigation stack
 	 */
-	public popToFirstView():void
+	public popToFirstView(transition?:(startView:View, endView:View, transition?:(startView:View, endView:View)=>Promise<any>)=>Promise<any>):void
 	{
 		if (this.__viewStack.length > 1)
 		{
+			transition || (transition = this.defaultPopTransition);
+
 			let currentView:View = this.__viewStack.splice(1).pop();
 			let nextView:View = last(this.__viewStack);
 
 			this.appendView(nextView);
 
-			this.defaultPopTransition(currentView, nextView)
+			transition(currentView, nextView)
 				.then(() => currentView && currentView.remove())
 				;
 		}
@@ -176,15 +125,17 @@ export default class ViewNavigator extends View
 	/**
 	 * Removes all of the views from the navigator stack
 	 */
-	public popAll():void
+	public popAll(transition?:(startView:View, endView:View)=>Promise<any>):void
 	{
+		transition || (transition = this.defaultPopTransition);
+
 		let currentView:View = this.__viewStack.splice(0).pop();
 
 		// TODO Implement transitions
 
 		if (currentView)
 		{
-			this.defaultPopTransition(currentView)
+			transition(currentView, undefined)
 				.then(() => currentView.remove())
 				;
 		}
@@ -193,8 +144,10 @@ export default class ViewNavigator extends View
 	/**
 	 * Pushes a new view onto the top of the navigation stack
 	 */
-	public pushView(viewClass:any, options?:any):void
+	public pushView(viewClass:any, options?:any, transition?:(startView:View, endView:View)=>Promise<any>):void
 	{
+		transition || (transition = this.defaultPushTransition);
+
 		let currentView:View = last(this.__viewStack);
 		let nextView:View = new viewClass(this.__assignTo(options));
 
@@ -202,7 +155,7 @@ export default class ViewNavigator extends View
 
 		this.appendView(nextView);
 
-		this.defaultPushTransition(nextView, currentView)
+		transition(currentView, nextView)
 			.then(() => currentView && currentView.detach())
 			;
 	}
@@ -210,8 +163,10 @@ export default class ViewNavigator extends View
 	/**
 	 * Replaces the top view of the navigation stack with a new view
 	 */
-	public replaceView(viewClass:any, options?:any):void
+	public replaceView(viewClass:any, options?:any, transition?:(startView:View, endView:View)=>Promise<any>):void
 	{
+		transition || (transition = this.defaultPushTransition);
+
 		let currentView:View = this.__viewStack.pop();
 		let nextView:View = new viewClass(this.__assignTo(options));
 
@@ -219,8 +174,68 @@ export default class ViewNavigator extends View
 
 		this.appendView(nextView);
 
-		this.defaultPushTransition(nextView, currentView)
+		transition(currentView, nextView)
 			.then(() => currentView && currentView.remove())
 			;
 	}
+}
+
+// Related CSS styles
+
+document.querySelector('head').innerHTML +=
+	'<style type="text/css">'+
+		'.cb-viewnavigator { position:relative; }'+
+		'.cb-viewnavigator, .cb-viewnavigator > .cb-view { width:100%; height:100%; }'+
+		'.cb-viewnavigator > .cb-view { position:absolute; }'+
+	'</style>';
+
+// Default easing functions
+
+function easeOutCubic(currentIteration:number, startValue:number, changeInValue:number, totalIterations:number):number
+{
+	return changeInValue * (Math.pow(currentIteration / totalIterations - 1, 3) + 1) + startValue;
+}
+
+function slide(view:View, fromPercent:number, toPercent:number):Promise<any>
+{
+	return new Promise((resolve, reject) =>
+	{
+		let el = view.el;
+		let totalIterations = 12;
+		let currentIteration = 0;
+		let currentPercent = fromPercent;
+		let changeInValue = toPercent-fromPercent;
+
+		el.style.pointerEvents = 'none';
+
+		let animate = () =>
+		{
+			el.style.left = `${currentPercent}%`;
+
+			if (currentIteration == totalIterations)
+			{
+				el.style.pointerEvents = null;
+				resolve();
+			}
+			else
+			{
+				currentPercent = easeOutCubic(currentIteration++, fromPercent, changeInValue, totalIterations);
+				requestAnimationFrame(animate);
+			}
+		};
+
+		requestAnimationFrame(animate);
+	});
+}
+
+function defaultPopTransition(startView:View, endView:View):Promise<any>
+{
+	if (endView) slide(endView, -100, 0);
+	return slide(startView, 0, 100);
+}
+
+function defaultPushTransition(startView:View, endView:View):Promise<any>
+{
+	if (startView) slide(startView, 0, -100);
+	return slide(endView, 100, 0);
 }
