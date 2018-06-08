@@ -44,6 +44,9 @@ var ViewNavigator = /** @class */ (function (_super) {
             conbo_1.warn('ViewNavigator.firstView not specified');
         }
     };
+    /**
+     * @private
+     */
     ViewNavigator.prototype.__assignTo = function (obj) {
         return conbo_1.setDefaults(obj || {}, {
             context: this.context,

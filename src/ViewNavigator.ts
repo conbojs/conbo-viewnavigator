@@ -36,7 +36,7 @@ export default class ViewNavigator extends View
 	/**
 	 * @private
 	 */
-	private __construct(options:any):void
+	protected __construct(options:any):void
 	{
 		assign(this, setDefaults
 		(
@@ -73,6 +73,9 @@ export default class ViewNavigator extends View
 		}
 	}
 
+	/**
+     * @private
+     */
 	private __assignTo(obj:any):any
 	{
 		return setDefaults(obj || {},

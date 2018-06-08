@@ -29,11 +29,14 @@ export default class ViewNavigator extends View {
     /**
      * @private
      */
-    private __construct;
+    protected __construct(options: any): void;
     /**
      * @private
      */
     private __creationCompleteHandler;
+    /**
+     * @private
+     */
     private __assignTo;
     /**
      * Pops the current view off the navigation stack
