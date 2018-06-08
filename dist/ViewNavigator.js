@@ -122,7 +122,7 @@ exports.default = ViewNavigator;
 document.querySelector('head').innerHTML +=
     '<style type="text/css">' +
         '.cb-viewnavigator { position:relative; }' +
-        '.cb-viewnavigator, .cb-viewnavigator > .cb-view { width:100%; height:100%; }' +
+        '.cb-viewnavigator, .cb-viewnavigator > .cb-view { box-sizing:border-box; width:100%; height:100%; }' +
         '.cb-viewnavigator > .cb-view { position:absolute; }' +
         '</style>';
 // Default easing functions
