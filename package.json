@@ -18,7 +18,7 @@
 	"main": "./dist/ViewNavigator.js",
 	"repository": {
 		"type": "git",
-		"url": "git@github.com:mesmotronic/conbo-viewstack.git"
+		"url": "git@github.com:mesmotronic/conbo-viewnavigator.git"
 	},
 	"readme": "./README.md",
 	"types": "./dist/ViewNavigator.d.ts",
