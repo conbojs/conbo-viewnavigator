@@ -121,7 +121,7 @@ exports.ViewNavigator = ViewNavigator;
 // Related CSS styles
 document.querySelector('head').innerHTML +=
     '<style type="text/css">' +
-        '.cb-viewnavigator { position:relative; }' +
+        '.cb-viewnavigator { position:relative; overflow:hidden; }' +
         '.cb-viewnavigator, .cb-viewnavigator > .cb-view { box-sizing:border-box; width:100%; height:100%; }' +
         '.cb-viewnavigator > .cb-view { position:absolute; }' +
         '</style>';
