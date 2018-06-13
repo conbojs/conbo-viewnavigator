@@ -23,12 +23,12 @@ var ViewNavigator = /** @class */ (function (_super) {
     /**
      * @private
      */
-    ViewNavigator.prototype.__construct = function (options) {
-        conbo_1.assign(this, conbo_1.setDefaults({}, conbo_1.pick(options, 'defaultPopTransition', 'defaultPushTransition', 'firstView', 'firstViewOptions'), conbo_1.pick(this, 'defaultPopTransition', 'defaultPushTransition', 'firstView', 'firstViewOptions'), { defaultPopTransition: defaultPopTransition, defaultPushTransition: defaultPushTransition }));
+    ViewNavigator.prototype.preinitialize = function (options) {
+        _super.prototype.preinitialize.call(this, options);
+        conbo_1.assign(this, conbo_1.setDefaults({}, conbo_1.pick(options, 'defaultPopTransition', 'defaultPushTransition', 'firstView', 'firstViewOptions'), conbo_1.pick(this, 'defaultPopTransition', 'defaultPushTransition', 'firstView', 'firstViewOptions'), { slidePopTransition: slidePopTransition, slidePushTransition: slidePushTransition }));
         this.__viewStack = [];
         this.className += ' cb-viewnavigator';
         this.addEventListener(conbo_1.ConboEvent.CREATION_COMPLETE, this.__creationCompleteHandler, this);
-        conbo_1.View.prototype.__construct.apply(this, arguments);
     };
     /**
      * @private
@@ -117,7 +117,7 @@ var ViewNavigator = /** @class */ (function (_super) {
     };
     return ViewNavigator;
 }(conbo_1.View));
-exports.default = ViewNavigator;
+exports.ViewNavigator = ViewNavigator;
 // Related CSS styles
 document.querySelector('head').innerHTML +=
     '<style type="text/css">' +
@@ -152,13 +152,15 @@ function slide(view, fromPercent, toPercent) {
         requestAnimationFrame(animate);
     });
 }
-function defaultPopTransition(startView, endView) {
+function slidePopTransition(startView, endView) {
     if (endView)
         slide(endView, -100, 0);
     return slide(startView, 0, 100);
 }
-function defaultPushTransition(startView, endView) {
+exports.slidePopTransition = slidePopTransition;
+function slidePushTransition(startView, endView) {
     if (startView)
         slide(startView, 0, -100);
     return slide(endView, 100, 0);
 }
+exports.slidePushTransition = slidePushTransition;

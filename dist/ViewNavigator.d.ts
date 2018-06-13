@@ -3,7 +3,7 @@ import { View, Promise } from 'conbo';
  * ViewNavigator for ConboJS
  * @author	Mesmotronic Limited <https://www.mesmotronic.com/>
  */
-export default class ViewNavigator extends View {
+export declare class ViewNavigator extends View {
     /**
      * Function that controls the pop transition
      * @example		function(startView:View, endView:View):Promise<any> { ... }
@@ -29,7 +29,7 @@ export default class ViewNavigator extends View {
     /**
      * @private
      */
-    protected __construct(options: any): void;
+    protected preinitialize(options: any): void;
     /**
      * @private
      */
@@ -59,3 +59,5 @@ export default class ViewNavigator extends View {
      */
     replaceView(viewClass: any, options?: any, transition?: (startView: View, endView: View) => Promise<any>): void;
 }
+export declare function slidePopTransition(startView: View, endView: View): Promise<any>;
+export declare function slidePushTransition(startView: View, endView: View): Promise<any>;

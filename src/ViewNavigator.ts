@@ -4,7 +4,7 @@ import { ConboEvent, last, setDefaults, View, warn, pick, assign, Promise } from
  * ViewNavigator for ConboJS
  * @author	Mesmotronic Limited <https://www.mesmotronic.com/>
  */
-export default class ViewNavigator extends View
+export class ViewNavigator extends View
 {
 	/**
 	 * Function that controls the pop transition
@@ -36,22 +36,22 @@ export default class ViewNavigator extends View
 	/**
 	 * @private
 	 */
-	protected __construct(options:any):void
+	protected preinitialize(options:any):void
 	{
+		super.preinitialize(options);
+
 		assign(this, setDefaults
 		(
 			{},
 			pick(options, 'defaultPopTransition', 'defaultPushTransition', 'firstView', 'firstViewOptions'),
 			pick(this, 'defaultPopTransition', 'defaultPushTransition', 'firstView', 'firstViewOptions'),
-			{defaultPopTransition, defaultPushTransition}
+			{slidePopTransition, slidePushTransition}
 		));
 
 		this.__viewStack = [];
 		this.className += ' cb-viewnavigator';
 
 		this.addEventListener(ConboEvent.CREATION_COMPLETE, this.__creationCompleteHandler, this);
-
-		(<any>View.prototype).__construct.apply(this, arguments);
 	}
 
 	/**
@@ -233,13 +233,13 @@ function slide(view:View, fromPercent:number, toPercent:number):Promise<any>
 	});
 }
 
-function defaultPopTransition(startView:View, endView:View):Promise<any>
+export function slidePopTransition(startView:View, endView:View):Promise<any>
 {
 	if (endView) slide(endView, -100, 0);
 	return slide(startView, 0, 100);
 }
 
-function defaultPushTransition(startView:View, endView:View):Promise<any>
+export function slidePushTransition(startView:View, endView:View):Promise<any>
 {
 	if (startView) slide(startView, 0, -100);
 	return slide(endView, 100, 0);
