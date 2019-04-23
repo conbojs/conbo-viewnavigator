@@ -6,3 +6,10 @@ The ViewNavigator component is a container that consists of a collection of View
 Navigation in an application is controlled by a stack of View objects. The top View object on the stack defines the currently visible view. The ViewNavigator container maintains the stack. To change views, push a new View object onto the stack, or pop the current View object off of the stack. Popping the currently visible View object from the stack destroys the View object, and returns the user to the previous view on the stack.
 
 When a view is pushed on top of the stack, the old view is detached and can be restored when the view is reactived as a result of the current view being popped off the stack.
+
+Make a donation
+---------------
+
+If you find this project useful, why not buy us a coffee (or as many as you think it's worth)?
+
+[![Make a donation](https://www.paypalobjects.com/en_US/GB/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=onlinepayment@mesmotronic.com&item_name=Donation+to+open+source+(ViewNavigator+for+ConboJS)&currency_code=GBP)
