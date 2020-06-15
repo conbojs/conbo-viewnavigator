@@ -51,7 +51,7 @@ export class ViewNavigator extends View
 		this.__viewStack = [];
 		this.className += ' cb-viewnavigator';
 
-		this.addEventListener(ConboEvent.CREATION_COMPLETE, this.__creationCompleteHandler, this);
+		this.addEventListener(ConboEvent.CREATION_COMPLETE, this.__creationCompleteHandler, {scope:this});
 	}
 
 	/**
