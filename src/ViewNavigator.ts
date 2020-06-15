@@ -45,7 +45,7 @@ export class ViewNavigator extends View
 			{},
 			pick(options, 'defaultPopTransition', 'defaultPushTransition', 'firstView', 'firstViewOptions'),
 			pick(this, 'defaultPopTransition', 'defaultPushTransition', 'firstView', 'firstViewOptions'),
-			{slidePopTransition, slidePushTransition}
+			{'defaultPopTransition':slidePopTransition, 'defaultPushTransition':slidePushTransition}
 		));
 
 		this.__viewStack = [];
