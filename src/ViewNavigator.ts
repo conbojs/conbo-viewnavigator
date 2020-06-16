@@ -244,3 +244,5 @@ export function slidePushTransition(startView:View, endView:View):Promise<any>
 	if (startView) slide(startView, 0, -100);
 	return slide(endView, 100, 0);
 }
+
+export default ViewNavigator;
