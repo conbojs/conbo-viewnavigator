@@ -1,4 +1,4 @@
-import { ConboEvent, last, setDefaults, View, warn, pick, assign, Promise } from 'conbo';
+import { ConboEvent, last, setDefaults, View, warn, pick, assign, Promise, compact } from 'conbo';
 
 /**
  * ViewNavigator for ConboJS
@@ -49,7 +49,7 @@ export class ViewNavigator extends View
 		));
 
 		this.__viewStack = [];
-		this.className += ' cb-viewnavigator';
+		this.className = compact([this.className, 'cb-viewnavigator']).join(' ');
 
 		this.addEventListener(ConboEvent.CREATION_COMPLETE, this.__creationCompleteHandler, {scope:this});
 	}

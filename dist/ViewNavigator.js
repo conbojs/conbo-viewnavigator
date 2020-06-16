@@ -30,7 +30,7 @@ var ViewNavigator = /** @class */ (function (_super) {
         _super.prototype.preinitialize.call(this, options);
         conbo_1.assign(this, conbo_1.setDefaults({}, conbo_1.pick(options, 'defaultPopTransition', 'defaultPushTransition', 'firstView', 'firstViewOptions'), conbo_1.pick(this, 'defaultPopTransition', 'defaultPushTransition', 'firstView', 'firstViewOptions'), { 'defaultPopTransition': slidePopTransition, 'defaultPushTransition': slidePushTransition }));
         this.__viewStack = [];
-        this.className += ' cb-viewnavigator';
+        this.className = conbo_1.compact([this.className, 'cb-viewnavigator']).join(' ');
         this.addEventListener(conbo_1.ConboEvent.CREATION_COMPLETE, this.__creationCompleteHandler, { scope: this });
     };
     /**
