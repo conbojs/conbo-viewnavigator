@@ -167,3 +167,4 @@ function slidePushTransition(startView, endView) {
     return slide(endView, 100, 0);
 }
 exports.slidePushTransition = slidePushTransition;
+exports.default = ViewNavigator;

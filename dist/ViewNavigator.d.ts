@@ -61,3 +61,4 @@ export declare class ViewNavigator extends View {
 }
 export declare function slidePopTransition(startView: View, endView: View): Promise<any>;
 export declare function slidePushTransition(startView: View, endView: View): Promise<any>;
+export default ViewNavigator;
